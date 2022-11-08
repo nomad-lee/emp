@@ -35,12 +35,11 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
 <style>
-	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; clear:right; padding-top:50px;}
+	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
 	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
 	body { background-color:#196F3D;}
 	td { color:white;}
 	img { display:block; margin:auto; width:120px; float:left; padding-top:5px; position:absolute;}
-
 </style>
 
 </head>
@@ -66,13 +65,16 @@
 				<tr>
 					<td class="fw-bold text-center"><%=d.deptNo%></td>
 					<td><%=d.deptName%></td>
-					<td><a class="btn btn-dark center" href="<%=request.getContextPath()%>/dept/updateDeptForm.jsp?deptNo=<%=d.deptNo%>">수정</a></td>
-					<td><a class="btn btn-danger center" href="<%=request.getContextPath()%>/dept/deleteDept.jsp?deptNo=<%=d.deptNo%>">삭제</a></td>
+					<td><a class="btn btn-dark me-0" style="float:right;" href="<%=request.getContextPath()%>/dept/updateDeptForm.jsp?deptNo=<%=d.deptNo%>">수정</a></td>
+					<td><a class="btn btn-danger" style="float:right;" href="<%=request.getContextPath()%>/dept/deleteDept.jsp?deptNo=<%=d.deptNo%>">삭제</a></td>
 				</tr>
 		<%	
 			}
 		%>
 		</table>
 	</div>
+	<footer class="footer text-center mt-4" style="color:white">
+		<span>ⓒ 2022 Starbucks Coffee Company. All Rights Reserved.</span>
+	</footer>
 </body>
 </html>

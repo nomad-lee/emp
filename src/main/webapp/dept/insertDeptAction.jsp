@@ -2,21 +2,21 @@
 <%@ page import = "java.sql.*" %>
 <%@ page import = "java.util.*" %>
 <%
-/* 
+
+	// 1. 요청분석
 	//null값 방지, 입력 페이지로 다시 이동
 	if(request.getParameter("deptNo") == null 
 		|| request.getParameter("deptName") == null) {
 		
 		response.sendRedirect(request.getContextPath()+"/dept/insertDeptForm.jsp");
 		return;
-	} */
+	}
 	
-	// 1. 요청분석
-	request.setCharacterEncoding("utf-8");
+	request.setCharacterEncoding("utf-8"); // post방식에서 필수
 	String deptNo = request.getParameter("deptNo");
 	String deptName = request.getParameter("deptName");
 	System.out.println(deptNo);
-	
+	/* 지정된 길이보다 길 경우 롤백이나 알림 기능 추가*/
 
 	// 2. 요청처리
 	Class.forName("org.mariadb.jdbc.Driver"); // mariadb 드라이버 로딩

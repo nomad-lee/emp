@@ -13,7 +13,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
 <style>
-	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; clear:right; padding-top:50px;}
+	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; clear:right; padding-top:50px; font-size: 40px;}
 	body { background-color:#196F3D;}
 	td { color:white;}
 	input { width:300px; }
@@ -26,18 +26,16 @@
 			<table class = "table">
 				<tr>
 					<td class = "col-md-2 text-center">부서번호</td>
-					<td class = "col-md-8"><input type="text" name="deptNo" placeholder="4자리 이내 입력"></td>
+					<td class = "col-md-8"><input type="text" name="deptNo" placeholder="4자리 이내 입력"></td> <!-- dept_no 4자리!! -->
 				</tr>
 				<tr>
 					<td class = "col-md-2 text-center">부서이름</td>
 					<td class = "col-md-8"><input type="text" name="deptName"></td>
-				</tr>			
-				<tr>
-					<td class="text-center" colspan="2">
-						<button class="btn btn-dark btn-lg" type="submit">부서추가</button>
-					</td>
 				</tr>
 			</table>
+			<div class="text-center">
+				<button class="btn btn-light btn-lg center" type="submit">부서추가</button>
+			</div>
 		</form>
 	</div>
 </body>
