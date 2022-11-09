@@ -40,18 +40,23 @@
 	body { background-color:#196F3D;}
 	td { color:white;}
 	img { display:block; margin:auto; width:120px; float:left; padding-top:5px; position:absolute;}
+	a:link { color:white;}
 </style>
 
 </head>
 <body>
 	<div class = "container">
-	<div>
-		<img src="<%=request.getContextPath()%>/img/starbucks.png">
-	</div>
-	<h1 class="text-center">DEPT LIST</h1>
-	<div align="right">
-		<a class="btn btn-light" href="<%=request.getContextPath()%>/dept/insertDeptForm.jsp">부서추가</a>
-	</div>		
+		<!-- 메뉴 -->
+		<div>
+			<jsp:include page="/inc/menu.jsp"></jsp:include>
+		</div>
+		<div>
+			<img src="<%=request.getContextPath()%>/img/starbucks.png">
+		</div>
+		<h1 class="text-center">DEPT LIST</h1>
+		<div align="right">
+			<a class="btn btn-light" href="<%=request.getContextPath()%>/dept/insertDeptForm.jsp">부서추가</a>
+		</div>		
 		<table class = "table">
 			<tr class = "bg-dark text-center">
 				<th class = "col-md-2">부서번호</th>
@@ -73,7 +78,7 @@
 		%>
 		</table>
 	</div>
-	<footer class="footer text-center mt-4" style="color:white">
+	<footer class="footer text-center mt-4" style="color:white"> <!-- 의미상 추후 수정 또는 삭제 예정 -->
 		<span>ⓒ 2022 Starbucks Coffee Company. All Rights Reserved.</span>
 	</footer>
 </body>

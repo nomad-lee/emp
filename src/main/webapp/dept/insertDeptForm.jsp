@@ -20,13 +20,26 @@
 </style>
 </head>
 <body>
+	<!-- 메뉴 -->
+	<div>
+		<jsp:include page="/inc/menu.jsp"></jsp:include>
+	</div>
 	<h1 class="text-center">INSERT LIST</h1>
+	<!-- msg parameter값이 있으면 출력 -->
+	<%
+		if(request.getParameter("msg") != null) {
+	%>
+			<div><%=request.getParameter("msg")%></div>
+	<%
+		}
+	%>
+	
 	<div class="container">
 		<form action="<%=request.getContextPath()%>/dept/insertDeptAction.jsp" method="post">
 			<table class = "table">
 				<tr>
 					<td class = "col-md-2 text-center">부서번호</td>
-					<td class = "col-md-8"><input type="text" name="deptNo" placeholder="4자리 이내 입력"></td> <!-- dept_no 4자리!! -->
+					<td class = "col-md-8"><input type="text" name="deptNo"></td>
 				</tr>
 				<tr>
 					<td class = "col-md-2 text-center">부서이름</td>

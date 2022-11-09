@@ -1,23 +1,35 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import = "java.sql.*"%>
+<%@ page import = "vo.*" %>
 <%
-	// 1. 요청분석	
+	// 1. 요청분석
+	String deptNo = request.getParameter("deptNo");
+	//링크로 호출하지 않고 폼 주소창에 직접 호출 시 null값이 된다.
+	if(deptNo == null){
+		response.sendRedirect(request.getContextPath()+"/dept/deptList.jsp");
+		return;
+	}
 	
 	// 2. 요청처리
 	Class.forName("org.mariadb.jdbc.Driver"); // mariadb 드라이버 로딩
 	Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/employees","root","java1234");
 	// 값 할당을 위해 (쿼리를)미리 준비하는 역할
-	PreparedStatement stmt = conn.prepareStatement("select dept_no deptNo, dept_name deptName from departments where dept_no = ?"); //? 바인드 변수, 보안 및 성능에 도움
-	String deptNo = null;
-	String deptName = null;
+	PreparedStatement stmt = conn.prepareStatement("select dept_name deptName from departments where dept_no = ?");
 	stmt.setString(1, request.getParameter("deptNo"));
 	
 	ResultSet rs = stmt.executeQuery(); // 0행 or 1행
 	
+	Department d = null;
+	if(rs.next()) {
+		d = new Department();
+		d.deptNo = deptNo;
+		d.deptName = rs.getString("deptName");
+	}
+	/* 
 	if(rs.next()) {
 		deptNo = rs.getString("deptNo");
 		deptName = rs.getString("deptName");
-	}
+	} */
 	
 	// 3. 출력
 %>
@@ -40,18 +52,31 @@
 	input { width:300px; }
 </style>
 </head>
-<body>
+<body>	
+	<!-- 메뉴 -->
+	<div>
+		<jsp:include page="/inc/menu.jsp"></jsp:include>
+	</div>
 	<h1 class="text-center">UPDATE LIST</h1>
+	<!-- msg parameter값이 있으면 출력 -->
+	<%
+		if(request.getParameter("msg") != null) {
+	%>
+			<div><%=request.getParameter("msg")%></div>
+	<%
+		}
+	%>
+	
 	<div class="container">
 		<form action="<%=request.getContextPath()%>/dept/updateDeptAction.jsp" method="post">
 			<table class = "table">
 				<tr>
 					<td class = "col-md-2 text-center">부서번호</td>
-					<td class = "col-md-8"><input type="text" name="deptNo" value="<%=deptNo%>" placeholder="4자리 이내 입력"></td>  <!-- dept_no 4자리!! -->
+					<td class = "col-md-8"><input type="text" name="deptNo" value="<%=d.deptNo%>" readonly="readonly"></td>
 				</tr>
 				<tr>
 					<td class = "col-md-2 text-center">부서이름</td>
-					<td class = "col-md-8"><input type="text" name="deptName" value="<%=deptName%>"></td>
+					<td class = "col-md-8"><input type="text" name="deptName" value="<%=d.deptName%>"></td>
 				</tr>
 			</table>			
 			<div class="text-center">
