@@ -3,6 +3,7 @@
 <%@ page import = "vo.*" %>
 <%
 	// 1. 요청분석
+	request.setCharacterEncoding("utf-8");
 	String deptNo = request.getParameter("deptNo");
 	//링크로 호출하지 않고 폼 주소창에 직접 호출 시 null값이 된다.
 	if(deptNo == null){
@@ -14,8 +15,9 @@
 	Class.forName("org.mariadb.jdbc.Driver"); // mariadb 드라이버 로딩
 	Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/employees","root","java1234");
 	// 값 할당을 위해 (쿼리를)미리 준비하는 역할
-	PreparedStatement stmt = conn.prepareStatement("select dept_name deptName from departments where dept_no = ?");
-	stmt.setString(1, request.getParameter("deptNo"));
+	String sql = "select dept_name deptName from departments where dept_no = ?";
+	PreparedStatement stmt = conn.prepareStatement(sql);
+	stmt.setString(1, deptNo);
 	
 	ResultSet rs = stmt.executeQuery(); // 0행 or 1행
 	
@@ -25,13 +27,7 @@
 		d.deptNo = deptNo;
 		d.deptName = rs.getString("deptName");
 	}
-	/* 
-	if(rs.next()) {
-		deptNo = rs.getString("deptNo");
-		deptName = rs.getString("deptName");
-	} */
 	
-	// 3. 출력
 %>
 <!DOCTYPE html>
 <html>
@@ -60,13 +56,13 @@
 	<h1 class="text-center">UPDATE LIST</h1>
 	<!-- msg parameter값이 있으면 출력 -->
 	<%
+		String msg = request.getParameter("msg");
 		if(request.getParameter("msg") != null) {
 	%>
-			<div><%=request.getParameter("msg")%></div>
+			<div><%=msg%></div>
 	<%
 		}
-	%>
-	
+	%>	
 	<div class="container">
 		<form action="<%=request.getContextPath()%>/dept/updateDeptAction.jsp" method="post">
 			<table class = "table">
