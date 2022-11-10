@@ -30,6 +30,12 @@
 		<li class="list-group-item list-group-item-action list-group-item-dark text-center">
 			<a class="btn btn-sm text-dark fs-4" href="<%=request.getContextPath()%>/dept/deptList.jsp">부서 관리</a>
 		</li>
+		<li class="list-group-item list-group-item-action list-group-item-dark text-center">
+			<a class="btn btn-sm text-dark fs-4" href="<%=request.getContextPath()%>/emp/empList.jsp">사원 관리</a>
+		</li>
+		<li class="list-group-item list-group-item-action list-group-item-dark text-center">
+			<a class="btn btn-sm text-dark fs-4" href="<%=request.getContextPath()%>/board/boardList.jsp">게시판 관리</a>
+		</li>
 	</ol>
 </body>
 </html>

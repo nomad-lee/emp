@@ -61,8 +61,9 @@
 <style>
 	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
 	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
+	body { background-color:#196F3D;}
 	td { color:white;}
-	a:link { color:white;}
+	a.page-item:visited { color:white;}
 
 </style>
 </head>
@@ -71,47 +72,62 @@
 	<div>
 		<jsp:include page="/inc/menu.jsp"></jsp:include>
 	</div>
-	
-	<h1 class="text-center">EMPLOYEES LIST</h1>
-	
-	<div class="text-white">현재 페이지 : <%=currentPage %></div>
 	<div class = "container">
-	<table border = "1" class = "table">
-		<tr class = "bg-dark text-center">
-			<th>사원이름</th>
-			<th>퍼스트네임</th>
-			<th>라스트네임</th>
-		</tr>
-		<%
-			for(Employee e : empList) {
-		%>
-				<tr>
-					<td><%=e.empNo %></td>
-					<td><a href=""><%=e.firstName %></a></td>
-					<td><%=e.lastName %></td>
-				</tr>
-		<%
-			}
-		%>
-	</table>
+		
+		<h1 class="text-center">EMPLOYEES LIST</h1>
+		
+		<div class="text-white">현재 페이지 : <%=currentPage %></div>
+		
+		<table class = "table">
+			<div class="row justify-content-md-center">
+			<tr class = "bg-dark text-center">
+				<th class = "col-3">사원이름</th>
+				<th>퍼스트네임</th>
+				<th>라스트네임</th>
+			</tr>
+			</div>
+			<%
+				for(Employee e : empList) {
+			%>
+					<tr>
+						<td class = "text-center"><%=e.empNo %></td>
+						<td><a href=""><%=e.firstName %></a></td>
+						<td><%=e.lastName %></td>
+					</tr>
+			<%
+				}
+			%>
+		</table>
 	</div>
 	
-	<!-- 페이징코드 -->
-	<nav class="pagination">
-		<a class="page-item" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=1%>">처음</a>
-		<%
-			if(currentPage > 1) {
-		%>
-			<a class="page-item" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=<%=currentPage-1%>">이전</a>		
-		<%
-			}
-			if(currentPage < lastPage) {
-		%>
-			<a class="page-item" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=<%=currentPage+1%>">다음</a>		
-		<%
-			}
-		%>
-		<a class="page-item" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=<%=lastPage%>">마지막</a>
-	</nav>
+	<div class = "container">
+		<!-- 페이징코드 -->
+		<nav aria-label="pagiantion">
+  		<ul class="pagination justify-content-center">
+  			<li class="page-item">
+			<a id=pnav1 class="page-link" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=1%>">처음으로</a>
+			</li>
+			<%
+				if(currentPage > 1) {
+			%>
+				<li class="page-item">
+				<a id=pnav2 class="page-link" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=<%=currentPage-1%>">이전</a>		
+				</li>
+			<%
+				}
+				if(currentPage < lastPage) {
+			%>
+				<li class="page-item">
+				<a id=pnav3 class="page-link" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=<%=currentPage+1%>">다음</a>		
+				</li>
+			<%
+				}
+			%>
+			<li class="page-item">
+			<a id=pnav4 class="page-link" href="<%=request.getContextPath()%>/emp/empList.jsp?currentPage=<%=lastPage%>">마지막</a>
+			</li>
+		</ul>
+		</nav>		
+	</div>
 </body>
 </html>

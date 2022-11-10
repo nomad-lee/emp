@@ -38,18 +38,18 @@
 	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
 	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
 	body { background-color:#196F3D;}
-	td { color:white;}
+	td { color:white; vertical-align : middle;}
 	img { display:block; margin:auto; width:120px; float:left; padding-top:5px; position:absolute;}
 	a:link { color:white;}
 </style>
 
 </head>
 <body>
+	<!-- 메뉴 -->
+	<div>
+		<jsp:include page="/inc/menu.jsp"></jsp:include>
+	</div>
 	<div class = "container">
-		<!-- 메뉴 -->
-		<div>
-			<jsp:include page="/inc/menu.jsp"></jsp:include>
-		</div>
 		<div>
 			<img src="<%=request.getContextPath()%>/img/starbucks.png">
 		</div>
@@ -68,7 +68,7 @@
 			for(Department d : list) { // 자바문법에서 제공하는 foreach문
 		%>
 				<tr>
-					<td class="fw-bold text-center"><%=d.deptNo%></td>
+					<td class="fw-bold text-center "><%=d.deptNo%></td>
 					<td><%=d.deptName%></td>
 					<td><a class="btn btn-dark me-0" style="float:right;" href="<%=request.getContextPath()%>/dept/updateDeptForm.jsp?deptNo=<%=d.deptNo%>">수정</a></td>
 					<td><a class="btn btn-danger" style="float:right;" href="<%=request.getContextPath()%>/dept/deleteDept.jsp?deptNo=<%=d.deptNo%>">삭제</a></td>
