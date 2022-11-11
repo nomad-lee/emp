@@ -4,13 +4,10 @@
 <%
 	// 1. 요청분석
 	request.setCharacterEncoding("utf-8");
-	String boardNo = request.getParameter("boardNo");
-	String boardTitle = request.getParameter("boardTitle");
-	String boardContent = request.getParameter("boardContent");
-	String boardWriter = request.getParameter("boardWriter");
+	int boardNo = Integer.parseInt(request.getParameter("boardNo"));
 	//링크로 호출하지 않고 폼 주소창에 직접 호출 시 null값이 된다.
-	if(boardNo == null){
-		response.sendRedirect(request.getContextPath()+"/board/boardOne.jsp?boardNo="+boardNo);
+	if(request.getParameter("boardNo") == null){
+		response.sendRedirect(request.getContextPath()+"/board/boardList.jsp");
 		return;
 	}
 	
@@ -20,7 +17,7 @@
 	// 값 할당을 위해 (쿼리를)미리 준비하는 역할
 	String sql = "SELECT board_title boardTitle, board_content boardContent, board_writer boardWriter, board_pw boardPw FROM board WHERE board_no = ?";
 	PreparedStatement stmt = conn.prepareStatement(sql);
-	stmt.setString(1, boardNo);
+	stmt.setInt(1, boardNo);
 	
 	ResultSet rs = stmt.executeQuery(); // 0행 or 1행
 	
@@ -31,7 +28,7 @@
 		board.boardContent = rs.getString("boardContent");
 		board.boardWriter = rs.getString("boardWriter");
 	}
-	System.out.println(boardNo + "FORM");
+	System.out.println(boardNo + "FORM"); //디버깅 코드
 %>
 
 <!DOCTYPE html>
@@ -60,17 +57,17 @@
 	<h1 class="text-center mb-5" >UPDATE POST</h1>
 	<!-- msg parameter값이 있으면 출력 -->
 	<%
-		if(request.getParameter("msg") != null) {
+		String msg = request.getParameter("msg");
+		if(msg != null) {
 	%>
-			<div><%=request.getParameter("msg")%></div> <!-- 제목을 입력하시오, 내용을 입력하시오 -->
+			<div><%=msg%></div> <!-- 제목을 입력하시오, 내용을 입력하시오 -->
 	<%
 		}
 	%>
 	
 	<div class="container">
 		<form action="<%=request.getContextPath()%>/board/updateBoardAction.jsp" method="post">
-			<table class = "table">
-				
+			<table class = "table">				
 				<div class="row g-2">
 					<div class="form-floating col-md-2">
 					  <input type="text" class="form-control" id="floatingInput" placeholder="Num"  name="boardNo" value="<%=boardNo%>" readonly>
@@ -91,13 +88,13 @@
 					  <label for="floatingInput">작성자</label>
 					</div>
 					<div class="form-floating col-md">
-					  <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="boardPw" value="">
+					  <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="boardPw">
 					  <label for="floatingInput">비밀번호</label>
 					</div>
 				</div>
 			</table>
 			<div class="text-center">
-				<button class="btn btn-light btn-lg center" type="submit">수정완료</button>
+				<button type="submit" class="btn btn-light btn-lg center">수정완료</button>
 			</div>			
 		</form>
 	</div>

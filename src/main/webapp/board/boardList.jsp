@@ -31,6 +31,7 @@
 	PreparedStatement listStmt = conn.prepareStatement(listSql);
 	listStmt.setInt(1, beginRow);
 	listStmt.setInt(2, ROW_PER_PAGE);
+	
 	ResultSet listRs = listStmt.executeQuery(); // 모델 source data
 	ArrayList<Board> boardList = new ArrayList<Board>(); // 모델의 new data
 	while(listRs.next()) {
@@ -59,8 +60,7 @@
 	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
 	body { background-color:#196F3D;}
 	td { color:white;}
-	a#board1 {}
-	a#board1:link { color:white;}
+	a#board1:link { color:white;} /* id선택자 #으로 사용 */
 	a#board1:visited { color:white;}
 
 </style>
@@ -78,14 +78,14 @@
 		<!-- 3. 모델데이터(ArrayList<Board>) 출력 -->
 		<table class="table">
 			<tr class = "bg-dark text-center">
-				<th>번호</th>
+				<th class="col-md-1">번호</th>
 				<th>제목</th>
 			</tr>
 			<%
 				for(Board board : boardList){
 			%>
 			<tr>
-				<td class="text-center"><%=board.boardNo%></td>
+				<td class="text-center fw-bold"><%=board.boardNo%></td>
 				<!-- 제목 클릭시 상세보기 이동 -->
 				<td>
 					<a class="text-decoration-none" id="board1" href="<%=request.getContextPath()%>/board/boardOne.jsp?boardNo=<%=board.boardNo%>">

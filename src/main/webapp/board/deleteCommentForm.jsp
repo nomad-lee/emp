@@ -4,7 +4,7 @@
 
 <%
 	//1
-	int boardNo = Integer.parseInt(request.getParameter("boardNo"));
+	int boardNo = Integer.parseInt(request.getParameter("commentNo"));
 	String msg = request.getParameter("msg"); // 수정실패 시 리다이렉트 때에는 null값이 아니고 메세지 있음
 
 	// 2
