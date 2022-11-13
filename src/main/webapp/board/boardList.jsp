@@ -78,7 +78,7 @@
 		<!-- 3. 모델데이터(ArrayList<Board>) 출력 -->
 		<table class="table">
 			<tr class = "bg-dark text-center">
-				<th class="col-md-1">번호</th>
+				<th class="col-sm-2">번호</th>
 				<th>제목</th>
 			</tr>
 			<%

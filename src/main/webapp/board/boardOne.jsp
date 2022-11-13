@@ -141,17 +141,18 @@
 						  <input type="password" class="form-control" id="floatingInput" placeholder="password" name="commentPw">
 						  <label for="floatingInput">비밀번호</label>
 						</div>						
-						<div class="form-floating col-md-2 text-center">
-							<button class="form-control btn btn-dark btn-lg" id="insertcomment" type="submit">댓글입력</button>
+						<div class="form-floating col-md-3 text-center">
+							<button class="btn btn-dark btn-lg" id="insertcomment" type="submit">댓글입력</button>
 						</div>
 					</div>
 				</table>
 			</form>			
 		<!-- msg parameter값이 있으면 출력 -->
 		<%
-			if(request.getParameter("commentMsg") != null) {
+			String msg = request.getParameter("insertCommentMsg");
+			if(msg != null) {
 		%>
-				<div><%=request.getParameter("commentMsg")%></div>
+				<div><%=msg%></div>
 		<%
 			}
 		%>
@@ -159,53 +160,50 @@
 		<!-- 댓글목록 -->
 		<div>
 			<div class = "container">		
-				<h2 class="text-center mb-3">댓글목록</h2>				
-				<!-- msg parameter값이 있으면 출력 -->
-				<%
-					if(request.getParameter("commentDeleteMsg") != null) {
-				%>
-						<div><%=request.getParameter("commentDeleteMsg")%></div>
-				<%
-					}
-				%>
+				<h2 class="text-center mb-3">댓글목록</h2>			
 				<table class="table">
 					<tr class = "bg-dark text-center">
-						<th class="col-md-1">번호</th>
-						<th>내용</th>
-						<th class="col-md-1">작성일</th>
-						<th class="col-md-1">삭제</th>
+						<th class="col-sm-2">번호</th>
+						<th class="">내용</th>
+						<th class="col-sm-2">작성일</th>
+						<th class="col-sm-2">수정/삭제</th>
 					</tr>
 					<%
 						for(Comment c : commentList) {
 					%>
-					<tr>
-						<td class="text-center fw-bold"><%=c.commentNo%></td>
-						<td><%=c.commentContent%></td>
-						<td><%=c.createdate%></td>
-						<td><a type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCommentModal" href="<%=request.getContextPath()%>/board/deleteCommentAction?commentNo=<%=c.commentNo%>&boardNo=<%=boardNo%>">삭제</a></td>
-						<!-- 팝업으로 댓글삭제 처리 -->
+					<tr class = "align-middle">
+						<td class="text-center fw-bold" name="commentNo"><%=c.commentNo%></td>
+						<td name="commentContent"><%=c.commentContent%></td>
+						<td class="text-center" name="createdate"><%=c.createdate%></td>
+						<td>
+							<div class="d-grid mx-auto">
+								<a class="btn btn-danger" href="<%=request.getContextPath()%>/board/updateDeleteCommentForm.jsp?boardNo=<%=board.boardNo%>&commentNo=<%=c.commentNo%>&commentContent=<%=c.commentContent%>&createdate=<%=c.createdate%>">수정<br>삭제</a>
+							</div>
+						</td>
+						<!-- 모달로 댓글삭제 처리하려다 보류 -->
+						<!--
 						<div class="modal fade" id="deleteCommentModal" aria-hidden="true">
-						  <div class="modal-dialog">
-						    <div class="modal-content">
-						      <div class="modal-header">
-						        <h5 class="modal-title" id="deleteCommentLabel">비밀번호 확인 : &nbsp;</h5>
-						        
-						        <form action="<%=request.getContextPath()%>/board/deleteCommentAction.jsp" method="post">
-						          <div>
-									<input type="hidden" name="commentNo" value="<%=c.commentNo%>">
-						            <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="commentPw"> <!-- 비번 -->
-						          </div>
-						        </form>
-						        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-						      </div>
-						      <div class="modal-footer">
-						        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-						        <button type="button" class="btn btn-primary">확인</button>
-						      </div>
-						    </div>
-						  </div>
-						</div>						
-						<!--  -->
+							<div class="modal-dialog">
+								<div class="modal-content">
+								    <form action="<%=request.getContextPath()%>/board/deleteCommentAction.jsp" method="post">
+							    	<div class="modal-header">
+							    		<h5 class="modal-title" id="deleteCommentLabel">비밀번호 확인 : &nbsp;</h5>
+							      
+										    <div>
+												<input type="hidden" name="baordNo" value="<%=board.boardNo%>">
+												<input type="hidden" name="commentNo" value="<%=c.commentNo%>">
+												<input type="password" class="form-control" id="floatingInput" placeholder="Password" name="commentPw"> 
+									        </div>
+								    		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							    	</div>
+									<div class="modal-footer">
+									    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+									    <button type="submit" class="btn btn-primary">확인</button>
+							   		</div>
+								   	</form>
+								</div>
+							</div>
+						</div>	-->
 					</tr>
 					<%
 						}

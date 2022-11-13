@@ -15,7 +15,7 @@
 	
 	if(commentContent == null || commentPw == null || commentContent.equals("") || commentPw.equals("")) {
 		String msg = URLEncoder.encode("내용과 비밀번호를 입력하시오", "utf-8"); //미입력 방지, get방식 주소창에 문자열 인코딩
-		response.sendRedirect(request.getContextPath()+"/board/boardOne.jsp?commentMsg="+msg+"&boardNo="+boardNo);
+		response.sendRedirect(request.getContextPath()+"/board/boardOne.jsp?insertCommentMsg="+msg+"&boardNo="+boardNo);
 		return;
 	}
 	

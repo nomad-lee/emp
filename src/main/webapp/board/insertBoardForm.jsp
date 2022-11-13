@@ -16,6 +16,7 @@
 	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; clear:right; padding-top:50px; font-size: 40px;}
 	body { background-color:#196F3D;}
 	input { width:300px;}
+	#msg { color:red; font-size: 20px;}
 </style>
 </head>
 <body>
@@ -26,9 +27,10 @@
 	<h1 class="text-center mb-5" >POSTING</h1>
 	<!-- msg parameter값이 있으면 출력 -->
 	<%
-		if(request.getParameter("msg") != null) {
+		String msg = request.getParameter("msg");
+		if(msg != null) {
 	%>
-			<div><%=request.getParameter("msg")%></div> <!-- 제목을 입력하시오, 내용을 입력하시오 -->
+			<div class="text-red text-center" id="msg"><%=msg%></div> <!-- 제목을 입력하시오, 내용을 입력하시오 -->
 	<%
 		}
 	%>

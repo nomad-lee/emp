@@ -42,6 +42,7 @@
 <style>
 	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
 	body { background-color:#196F3D;}
+	#msg { color:red; font-size: 20px;}
 
 </style>
 </head>
@@ -54,7 +55,7 @@
 	<%
 		if(msg != null) {
 	%>
-		<div><%=msg%></div>
+		<div class="text-red text-center" id="msg"><%=msg%></div>
 	<%      
 		}
 	%>	
