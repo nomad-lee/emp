@@ -128,7 +128,7 @@
 		</div>
 		<!-- 댓글입력 -->
 		<div class="container">
-			<h2 class="text-center mb-3">댓글입력</h2>			
+			<h2 class="text-center mb-3">INSERT COMMENT</h2>			
 			<form action="<%=request.getContextPath()%>/board/insertCommentAction.jsp" method="post">
 				<input type="hidden" name="boardNo" value="<%=board.boardNo%>">
 				<table class = "table">
@@ -142,7 +142,7 @@
 						  <label for="floatingInput">비밀번호</label>
 						</div>						
 						<div class="form-floating col-md-3 text-center">
-							<button class="btn btn-dark btn-lg" id="insertcomment" type="submit">댓글입력</button>
+							<button class="btn btn-secondary btn-lg" id="insertcomment" type="submit">댓글입력</button>
 						</div>
 					</div>
 				</table>
@@ -160,7 +160,7 @@
 		<!-- 댓글목록 -->
 		<div>
 			<div class = "container">		
-				<h2 class="text-center mb-3">댓글목록</h2>			
+				<h2 class="text-center mb-3">COMMENT LIST</h2>			
 				<table class="table">
 					<tr class = "bg-dark text-center">
 						<th class="col-sm-2">번호</th>
