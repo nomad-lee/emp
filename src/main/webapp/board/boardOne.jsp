@@ -180,30 +180,6 @@
 								<a class="btn btn-danger" href="<%=request.getContextPath()%>/board/updateDeleteCommentForm.jsp?boardNo=<%=board.boardNo%>&commentNo=<%=c.commentNo%>&commentContent=<%=c.commentContent%>&createdate=<%=c.createdate%>">수정<br>삭제</a>
 							</div>
 						</td>
-						<!-- 모달로 댓글삭제 처리하려다 보류 -->
-						<!--
-						<div class="modal fade" id="deleteCommentModal" aria-hidden="true">
-							<div class="modal-dialog">
-								<div class="modal-content">
-								    <form action="<%=request.getContextPath()%>/board/deleteCommentAction.jsp" method="post">
-							    	<div class="modal-header">
-							    		<h5 class="modal-title" id="deleteCommentLabel">비밀번호 확인 : &nbsp;</h5>
-							      
-										    <div>
-												<input type="hidden" name="baordNo" value="<%=board.boardNo%>">
-												<input type="hidden" name="commentNo" value="<%=c.commentNo%>">
-												<input type="password" class="form-control" id="floatingInput" placeholder="Password" name="commentPw"> 
-									        </div>
-								    		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-							    	</div>
-									<div class="modal-footer">
-									    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-									    <button type="submit" class="btn btn-primary">확인</button>
-							   		</div>
-								   	</form>
-								</div>
-							</div>
-						</div>	-->
 					</tr>
 					<%
 						}

@@ -3,26 +3,20 @@
 <%@ page import = "java.util.*" %>
 <%@ page import = "vo.*" %>
 <%
-	//1. 요청분석
-	request.setCharacterEncoding("utf-8");
-	String word = request.getParameter("word");
 	//페이지 알고리즘
 	int currentPage = 1;
 	if(request.getParameter("currentPage") != null) {
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
-		System.out.println(request.getParameter("currentPage"));
 	}
-	// 2
-	int rowPerPage = 10;	
+	//2
+	int rowPerPage = 10;
+	
+	
 	
 	Class.forName("org.mariadb.jdbc.Driver"); // mariadb 드라이버 로딩
 	Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/employees","root","java1234");
-	
-	String countSql = "SELECT count(*) from employees WHERE first_name LIKE ? OR last_name LIKE ?";
+	String countSql = "select count(*) from employees";
 	PreparedStatement countStmt = conn.prepareStatement(countSql);
-	countStmt.setString(1, "%"+word+"%");
-	countStmt.setString(2, "%"+word+"%");
-	
 	ResultSet countRs = countStmt.executeQuery();
 	int count = 0;
 	if(countRs.next()) {
@@ -47,22 +41,11 @@
 	
 	
 	*/
-		
-	String empSql = null;
-	PreparedStatement empStmt = null;
-	if(word == null) {
-		empSql = "SELECT emp_no empNo, first_name firstName, last_name lastName FROM employees ORDER BY emp_no ASC LIMIT ?, ?";
-		empStmt = conn.prepareStatement(empSql);
-		empStmt.setInt(1, rowPerPage * (currentPage - 1));
-		empStmt.setInt(2, rowPerPage);
-		System.out.println(word+"참참");
-	} else {
-		empSql = "SELECT emp_no empNo, first_name firstName, last_name lastName FROM employees WHERE first_name LIKE ? OR last_name LIKE ? ORDER BY emp_no ASC LIMIT 0, 10";
-		empStmt = conn.prepareStatement(empSql);
-		empStmt.setString(1, "%"+word+"%");
-		empStmt.setString(2, "%"+word+"%");
-		System.out.println(word+"거짓");
-	}
+	
+	String empSql = "SELECT emp_no empNo, first_name firstName, last_name lastName FROM employees ORDER BY emp_no asc LIMIT ?, ?";
+	PreparedStatement empStmt = conn.prepareStatement(empSql);
+	empStmt.setInt(1, rowPerPage * (currentPage - 1));
+	empStmt.setInt(2, rowPerPage);
 	ResultSet empRs = empStmt.executeQuery();
 	
 	ArrayList<Employee> empList = new ArrayList<Employee>();
@@ -73,10 +56,6 @@
 		e.lastName = empRs.getString("lastName");
 		empList.add(e);
 	}
-	
-	
-	
-	
 %>
     
 <!DOCTYPE html>
@@ -109,21 +88,6 @@
 		
 		<h1 class="text-center">EMPLOYEES LIST</h1>
 		
-		<!-- 사원명 검색창 -->
-		<form action="<%=request.getContextPath()%>/emp/empList.jsp" method="post">
-			<table>
-			<tr>
-				<td>검색단어를 포함하는 행 : <%=count%></td>
-			</tr>
-			<tr>
-				<td>
-				<label for="word">게시글 검색 : </label>
-				<input type="text" name="word" id="word">
-	        	<button type="submit">검색</button>
-				</td>
-			</tr>
-			</table>
-		</form>
 		
 		<table class = "table">
 			<div class="row justify-content-md-center">
