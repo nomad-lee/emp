@@ -1,383 +1,219 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import = "java.sql.*" %>
-<%@ page import = "java.util.*" %>
-<%@ page import = "vo.*" %>
-<%@ page import = "java.sql.DriverManager" %>
-<%@ page import = "java.sql.Connection" %>
-<%@ page import = "java.sql.PreparedStatement" %>
-<%@ page import = "java.sql.ResultSet" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="vo.*" %>
 <%
-	// 1 요청 분석
-
-	// 페이지 알고리즘
+	// 1. 요청 분석
+	// 페이징
 	int currentPage = 1;
-	if(request.getParameter("currentPage") != null) {
+	if(request.getParameter("currentPage") != null){
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
-	String word = request.getParameter("word");
-		
-	// 2 요청 처리
 	
-	// DB 연결
+	// 검색
+	request.setCharacterEncoding("UTF-8");	//한글
+	String word = request.getParameter("word");
+	// 1) searchContent == null / 2) searchContent == "" or "단어"
+	
+	// 2. 요청 처리 후 필요하다면 모델데이터 생성
+	final int ROW_PER_PAGE = 10;	// 상수(변수명-대문자)로 선언해 수정 방지
+	int beginRow = (currentPage-1)*ROW_PER_PAGE;
+	int cnt = 0;	// 전체 행 개수
+	
 	Class.forName("org.mariadb.jdbc.Driver");
 	Connection conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/employees", "root", "java1234");
 	
-	// 페이징을 위한 변수 선언
-	final int ROW_PER_PAGE = 10; 	// 페이지당 노출시킬 행의 수를 상수로 설정
-	int count = 0;					// board 테이블의 행의 수를 담을 변수
-	int lastPage = 0;				// 마지막 페이지를 담을 변수
-	
-	// 쿼리 실행에 필요한 변수 선언
-	PreparedStatement stmtCount = null; // == cntStmt
-	PreparedStatement stmtSelect = null; // == listStmt
-	ResultSet rsCount = null; // == cntRs
-	ResultSet rsSelect = null; // == listRs
-	
-	// select 문에서 나온 결과를 담을 리스트 선언
-	ArrayList<Board> list = new ArrayList<Board>();
-	
-	
-	// 2-1 word == null 		
-	if(word == null) {	
-		
-		// 2-1-1 word == null 일때 페이징
-		String sqlCount = "SELECT COUNT(*) FROM board";
-		stmtCount = conn.prepareStatement(sqlCount);
-
-		// count 쿼리 실행
-		rsCount = stmtCount.executeQuery();
-		
-		if(rsCount.next()) {
-			count = rsCount.getInt("COUNT(*)");
-		}
-		
-		lastPage = (int)(Math.ceil((double)count / (double)ROW_PER_PAGE));		
-		System.out.println("검색 : null 현재 페이지 : " + currentPage);
-		System.out.println("검색 : null board 행의 수 : " + count);
-		System.out.println("검색 : null lastPage : " + lastPage);
-	
-		
-		// 2-1-2 word == null 일때 출력해야 하는 결과물 찾기
-		String sqlSelect = "SELECT board_no, board_title, board_writer, createdate FROM board ORDER BY board_no ASC LIMIT ?,?";
-		stmtSelect = conn.prepareStatement(sqlSelect);
-		
-		stmtSelect.setInt(1, ROW_PER_PAGE*(currentPage-1));
-		stmtSelect.setInt(2, ROW_PER_PAGE);
-		
-		rsSelect = stmtSelect.executeQuery();
-		}
-	
-	
-	// 2-2-2 word == '%%' 
-	else {	
-		// 2-2-1 word == '%%' 일때 페이징
-		String sqlCount = "SELECT COUNT(*) FROM board where board_title like ?";
-		stmtCount = conn.prepareStatement(sqlCount);		
-		stmtCount.setString(1,"%"+word+"%");
-		
-		// count 쿼리 실행
-		rsCount = stmtCount.executeQuery();
-			
-		if(rsCount.next()) {
-			count = rsCount.getInt("COUNT(*)");
-		}
-		
-		lastPage = (int)(Math.ceil((double)count / (double)ROW_PER_PAGE));
-		
-		System.out.println("검색 : word 현재 페이지 : " + currentPage);
-		System.out.println("검색 : word board 행의 수 : " + count);
-		System.out.println("검색 : word lastPage : " + lastPage);
-		
-		
-		// 2-2-2 word == 일때 출력해야 하는 결과물 찾기
-		String sqlSelect = "select board_no, board_title, board_writer, createdate from board where board_title like ? ORDER BY board_no ASC LIMIT ?,?";
-		stmtSelect = conn.prepareStatement(sqlSelect);	 // 접속한 DB에 쿼리를 만들 때 사용하는 메서드
-		
-		stmtSelect.setString(1,"%"+word+"%");
-		stmtSelect.setInt(2, ROW_PER_PAGE*(currentPage-1));
-		stmtSelect.setInt(3, ROW_PER_PAGE);
-		
-		rsSelect = stmtSelect.executeQuery();
-		}	
-	
-	while(rsSelect.next()) { // ResultSet의 API를 모른다면 사용할 수 없는 반복문
-		Board board = new Board();
-		board.boardNo = rsSelect.getInt("board_no");
-		board.boardTitle = rsSelect.getString("board_title");
-		board.boardWriter = rsSelect.getString("board_writer");
-		board.createdate = rsSelect.getString("createdate");
-		
-		System.out.println(board.boardNo);
-		list.add(board);
+	// 2-1. 마지막 페이지 구하기 위한 쿼리
+	String cntSql = null;
+	PreparedStatement cntStmt = null;
+	if(word == null){	// null -> 전체 데이터 개수
+		cntSql = "SELECT COUNT(*) cnt FROM board";
+		cntStmt = conn.prepareStatement(cntSql);
+	} else {	// 내용에 searchContent를 포함하는 게시글 개수 
+		cntSql = "SELECT COUNT(*) cnt FROM board WHERE board_content LIKE ?";
+		cntStmt = conn.prepareStatement(cntSql);
+		cntStmt.setString(1, "%"+word+"%");
 	}
+			
+	ResultSet cntRs = cntStmt.executeQuery();
+	if(cntRs.next()){
+		cnt = cntRs.getInt("cnt");
+	}
+
+	int lastPage = (int)Math.ceil((double)cnt / (double)ROW_PER_PAGE);
+	System.out.println("검색 : null 현재 페이지 : " + currentPage);
+	System.out.println("검색 : null board 행의 수 : " + cnt);
+	System.out.println("검색 : null lastPage : " + lastPage);
+	
+	// 2-2. 불러오기
+	String listSql = null;
+	PreparedStatement listStmt = null;
+	if(word == null){ // null -> 전체 출력
+		listSql = "SELECT board_no boardNo, board_title boardTitle FROM board ORDER BY board_no ASC LIMIT ?, ?";
+		listStmt = conn.prepareStatement(listSql);
+		listStmt.setInt(1, beginRow);
+		listStmt.setInt(2, ROW_PER_PAGE);
+		
+	}else {	// 내용에 searchContent를 포함하는 게시글만 출력 
+		listSql = "SELECT board_no boardNo, board_title boardTitle FROM board WHERE board_content LIKE ? ORDER BY board_no ASC LIMIT ?, ?";
+		listStmt = conn.prepareStatement(listSql);
+		listStmt.setString(1, "%"+word+"%");
+		listStmt.setInt(2, beginRow);
+		listStmt.setInt(3, ROW_PER_PAGE);
+	}
+	
+	ResultSet listRs = listStmt.executeQuery();	// model source data
+	ArrayList<Board> boardList = new ArrayList<Board>(); // model new data
+	while(listRs.next()){
+		Board b = new Board();
+		b.boardNo = listRs.getInt("boardNo");
+		b.boardTitle = listRs.getString("boardTitle");
+		boardList.add(b);
+	}
+	
+	//마지막 페이지
 %>
 <!DOCTYPE html>
 <html>
 <head>
-
-<!-- Latest compiled and minified CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Latest compiled JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
-
-<Style>
-	.title {
-		width : 400px;
-	}
-	.content {
-		width : 400px;
-	}	
-	.no {
-		width : 150px;
-	}
-	.createdate {
-		width : 150px;
-	}
-	.center {
-		text-align : center;
-		font-size : 18pt;
-		font-weight : bold;
-	}
-	.left {
-		text-align : left;
-		font-size : 18pt;
-		font-weight : bold;
-	}
-	.right {
-		text-align : right;
-		font-size : 18pt;
-		font-weight : bold;
-	}
-	.sub {
-		font-size : 40pt;
-		color : white;
-	}
-	.buttonSize {
-		width:350px; height:auto;
-	}
-	.buttonFont {
-		font-size : 20pt;
-		font-weight : bolder;
-	}
-	.subButtonSize {
-		width:75px; height:auto;
-	}
-	.subButtonFont {
-		font-size : 15pt;
-		font-weight : bolder;
-	}
-	.menuButtonSize {
-		width:150px; height:auto;
-	}
-	.wrapper {
-	  display : flex;
-	  justify-content: center;
-	  align-items: center;
-	  min-height: 100vh;
-	}
-</Style>
 <meta charset="UTF-8">
-<title>게시판 관리</title>
+<title>Board List</title>
+	<!-- 구글 글꼴 -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
+	<!-- 부트스트랩5 -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
+	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
+	body { background-color:#196F3D;}
+	td, div#currentPageNum { color:white;}
+	a#board1:link, a#board1:visited { color:white;} /* id선택자 #으로 사용 */
+
+</style>
 </head>
-<body style="background-color : rgb(95,95,95)">
-
-
-	<br>
-	<!-- 메뉴 파티션 jsp 구성-->
-	<div class="center">
-		<!-- jsp:inclue에서는 절대주소를 requst.getContextPath()로 쓰지 않음 -->
+<body>
+	<!-- 메뉴 -->
+	<div>
 		<jsp:include page="/inc/menu.jsp"></jsp:include>
 	</div>
-	<br>
-
-
 	<div class = "container">		
-		<table class = "table table-hover" style = "background-color : rgb(255,255,255)">	
-			<thead>					
-				<tr class="table-dark">
-					<th colspan = "4" class = "center">
-						<span class="sub">&nbsp;자유 게시판&nbsp;</span>
-						<span class="">
-							<form action="<%=request.getContextPath()%>/board/boardList.jsp" method="post">
-								<label for="word">부서이름 검색</label>
-								<%
-								if (word == null) {
-								%>
-									<input type="text" Style = "text-align : center" name="word">
-								<%
-								} else {
-								%>
-									<input type="text" Style = "text-align : center" name="word" value="<%=word%>">
-								<%
-								}
-								%>
-								<button type="submit">검색</button>
-							</form>
-						</span>
-					</th>
-				</tr>
-										
-				<tr class="table-dark">
-					<th class = "center no"></th>
-					<th class = "center"><div class="title">제목</div></th>
-					<th class = "center"><div class="title">작성자</div></th>
-					<th class = "center createdate"><div class="createdate">작성일</div></th>
-				</tr>
-			</thead>
-			
-			<tbody>
-			
+		<h1 class="text-center">GENERAL FORUM</h1>
+		<!-- 부서명 검색창 -->
+		<form action="<%=request.getContextPath()%>/board/boardList.jsp" method="post">
+			<table>
+			<tr>
+			<td>
+			<label for="word">부서이름 검색 : </label>
 			<%
-			for(Board board : list) {
+				if (word == null) {
 			%>
-				<tr>
-					<td class = "center table-dark"><div class="no"><%=board.boardNo%></div></td>
-					<td class = "center"><div class="title"><a href="<%=request.getContextPath()%>/board/boardOne.jsp?board_no=<%=board.boardNo%>"><%=board.boardTitle%></a></div></td>
-					<td class = "center"><div class="content"><%=board.boardWriter%></div></td>
-					<td class = "center"><div class="createdate"><%=board.createdate%></div></td>
-				</tr>
+				<input type="text" name="word" id="word">
 			<%
-			}
+				} else {
+			%>
+				<input type="text" name="word" id="word" value="<%=word%>">
+			<%
+				}
+			%>
+        	<button type="submit">검색</button>
+			</td>
+			</tr>
+			<tr>
+			<td>검색한 내용을 포함한 행의 수 : <%=cnt%></td>
+			</tr>
+			</table>
+		</form>
+		
+		<div align="right">
+			<a class="btn btn-secondary" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 추가</a>
+		</div>	
+		<!-- 3. 모델데이터(ArrayList<Board>) 출력 -->
+		<table class="table">
+			<tr class = "bg-dark text-center">
+				<th class="col-sm-2">번호</th>
+				<th>제목</th>
+			</tr>
+			<%
+				for(Board board : boardList){
+			%>
+			<tr>
+				<td class="text-center fw-bold"><%=board.boardNo%></td>
+				<!-- 제목 클릭시 상세보기 이동 -->
+				<td>
+					<a class="text-decoration-none" id="board1" href="<%=request.getContextPath()%>/board/boardOne.jsp?boardNo=<%=board.boardNo%>">
+						<%=board.boardTitle%>
+					</a>						
+				</td>
+			</tr>
+			<%
+				}
 			%>
 			
-				<tr>
-					<td colspan = "4" class = "center"><a type="button" class="btn btn-dark buttonSize" href = "<%=request.getContextPath()%>/board/insertBoardForm.jsp"><span class="buttonFont">글 쓰기</span></a></td>
-				</tr>
-				<tr>
-				<% 
-					if(currentPage != lastPage && currentPage == 1) {
-				%>
-						<td></td>
-						<td></td>
-						
-						<%
-						if(word == null) {
-						%>
-							<td>
-								<div class="left">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>"><span class="center">다음</span></a>
-								</div>
-							</td>
-							
-							<td>
-								<div class="right createdate">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=lastPage%>"><span class="center">마지막으로</span></a>
-								</div>
-							</td>
-						<%
-							
-						} else {
-						%>
-							<td>
-								<div class="left">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>&word=<%=word%>"><span class="center">다음</span></a>
-								</div>
-							</td>
-							
-							<td>
-								<div class="right createdate">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=lastPage%>&word=<%=word%>"><span class="center">마지막으로</span></a>
-								</div>
-							</td>
-						<%
-						}
-					}
-					
-					if(currentPage > 1 && currentPage < lastPage) {
-						if(word == null) {
-						%>
-								<td>
-									<div class="left no">
-										<a class="left" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=1"><span class="center">처음으로</span></a>
-									</div>
-								</td>
-								
-								<td colspan="2">
-									<div class="center">
-										<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>"><span class="center">이전</span></a>
-										<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>"><span class="center">다음</span></a>
-									</div>
-								</td>
-								
-								
-								<td>
-									<div class="right createdate">
-										<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=lastPage%>"><span class="center">마지막으로</span></a>
-									</div>
-								</td>
-						<%
-							
-						} else {
-						%>
-							<td>
-								<div class="left no">
-									<a class="left" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=1&word=<%=word%>"><span class="center">처음으로</span></a>
-								</div>
-							</td>
-							
-							<td colspan="2">
-								<div class="center">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>&word=<%=word%>"><span class="center">이전</span></a>
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>&word=<%=word%>"><span class="center">다음</span></a>
-								</div>
-							</td>
-							
-							
-							<td>
-								<div class="right createdate">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=lastPage%>&word=<%=word%>"><span class="center">마지막으로</span></a>
-								</div>
-							</td>
-						<%
-						}
-					}
-					
-					if(currentPage == lastPage && currentPage != 1) {
-						if(word == null) {
-						%>
-							<td>
-								<div class="left no">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=1"><span class="center">처음으로</span></a>
-								</div>
-							</td>
-							
-							<td>
-								<div class="right">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>"><span class="center">이전</span></a>
-								</div>
-							</td>
-						<%
-							
-						} else {
-						%>
-							<td>
-								<div class="left no">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=1&word=<%=word%>"><span class="center">처음으로</span></a>
-								</div>
-							</td>
-							
-							<td>
-								<div class="right">
-									<a href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>&word=<%=word%>"><span class="center">이전</span></a>
-								</div>
-							</td>
-							
-						<%
-						}
-						%>
-						<td></td>
-						<td></td>
-						<%
-					}
-					if (currentPage == lastPage && currentPage == 1) {
-					%>
-						<td colspan="4"></td>
-					<%
-					}					
-					%>
-				</tr>				
-			</tbody>					
 		</table>
+	</div>
+	<div class = "container">
+		<div id="currentPageNum">현재 페이지 : <%=currentPage%>	</div>
+		<!--3.2 페이징코드 -->
+		<nav aria-label="pagiantion">
+	  		<ul class="pagination justify-content-center">
+	  		<%
+	  			if(word == null){
+	  		%>	  			
+		  			<li class="page-item">
+						<a id=pnav1 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=1%>">처음으로</a>
+					</li>
+					<%
+						if(currentPage > 1) {
+					%>
+						<li class="page-item">
+							<a id=pnav2 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>">이전</a>		
+						</li>
+					<%
+						}
+						if(currentPage < lastPage) {
+					%>
+						<li class="page-item">
+							<a id=pnav3 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>">다음</a>		
+						</li>
+					<%
+						}
+					%>
+					<li class="page-item">
+						<a id=pnav4 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=lastPage%>">마지막</a>
+					</li>
+			<%
+	  			} else {
+	  		%>
+	  				<li class="page-item">
+						<a id=pnav1 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=1&word=<%=word%>">처음으로</a>
+					</li>
+					<%
+						if(currentPage > 1) {
+					%>
+						<li class="page-item">
+							<a id=pnav2 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>&word=<%=word%>">이전</a>		
+						</li>
+					<%
+						}
+						if(currentPage < lastPage) {
+					%>
+						<li class="page-item">
+							<a id=pnav3 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>&word=<%=word%>">다음</a>		
+						</li>
+					<%
+						}
+					%>
+					<li class="page-item">
+						<a id=pnav4 class="page-link" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=lastPage%>&word=<%=word%>">마지막</a>
+					</li>
+	  		<%	  				
+	  			}
+			%>
+			</ul>
+		</nav>		
 	</div>
 </body>
 </html>

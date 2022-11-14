@@ -89,10 +89,9 @@
 	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
 	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
 	body { background-color:#196F3D;}
-	td { color:white;}
-	a#board1:link { color:white;} /* id선택자 #으로 사용 */
-	a#board1:visited { color:white;}
-
+	td, div#currentPageNum, div#cntSearchRow { color:white;}
+	a#board1:link, a#board1:visited { color:white;} /* id선택자 #으로 사용 */
+	input#word { width:250px;}
 </style>
 </head>
 <body>
@@ -102,32 +101,6 @@
 	</div>
 	<div class = "container">		
 		<h1 class="text-center">GENERAL FORUM</h1>
-		<!-- 부서명 검색창 -->
-		<form action="<%=request.getContextPath()%>/board/boardList.jsp" method="post">
-			<table>
-			<tr>
-			<td>
-			<label for="word">부서이름 검색 : </label>
-			<%
-				if (word == null) {
-			%>
-				<input type="text" name="word" id="word">
-			<%
-				} else {
-			%>
-				<input type="text" name="word" id="word" value="<%=word%>">
-			<%
-				}
-			%>
-        	<button type="submit">검색</button>
-			</td>
-			</tr>
-			<tr>
-			<td>검색한 내용을 포함한 행의 수 : <%=cnt%></td>
-			</tr>
-			</table>
-		</form>
-		
 		<div align="right">
 			<a class="btn btn-secondary" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 추가</a>
 		</div>	
@@ -156,9 +129,13 @@
 		</table>
 	</div>
 	<div class = "container">
+		<div class="row">
+			<div class="col text-start" id="currentPageNum">현재 페이지 : <%=currentPage%></div>
+			<div class="col-7 text-end" id="cntSearchRow">검색결과를 포함한 행의 수 : <%=cnt%></div>
+		</div>
 		<!--3.2 페이징코드 -->
 		<nav aria-label="pagiantion">
-	  		<ul class="pagination justify-content-center">
+	  		<ul class="pagination justify-content-center mt-3">
 	  		<%
 	  			if(word == null){
 	  		%>	  			
@@ -213,7 +190,32 @@
 	  			}
 			%>
 			</ul>
-		</nav>		
+		</nav>
+		<!-- 부서명 검색창 -->
+		<div class="d-flex justify-content-center mt-4">
+			<form action="<%=request.getContextPath()%>/board/boardList.jsp" method="post">
+				<div class="row">
+					<div class="form-floating col-auto d-grid mx-auto">
+					<%
+						if (word == null) {
+					%>
+								<input type="text" class="form-control-sm" name="word" id="word" placeholder="찾을 내용을 입력">
+			
+					<%
+						} else {
+					%>
+								<input type="text" class="form-control-sm" name="word" id="word" placeholder="찾을 내용을 입력" value="<%=word%>">
+			
+					<%
+						}
+					%>
+					</div>
+					<div class="col-auto">
+			        	<button type="submit" class="btn btn-primary">검색</button>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 </body>
 </html>

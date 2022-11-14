@@ -218,11 +218,5 @@
 			</div>
 		</div>
 	</div>
-	<script> //아직 미구현
-		const btn = document.querySelector('#insertcomment')
-		btn.addEventListener('click',function(){
-	 	 window.scrollBy({left:0, bottom:0})
-	})
-	</script>
 </body>
 </html>
