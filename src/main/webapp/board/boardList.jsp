@@ -3,7 +3,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="vo.*" %>
 <%
-	// 1. 요청 분석
+	//1. 요청분석
 	// 페이징
 	int currentPage = 1;
 	if(request.getParameter("currentPage") != null){
@@ -11,12 +11,11 @@
 	}
 	
 	// 검색
-	request.setCharacterEncoding("UTF-8");	//한글
+	request.setCharacterEncoding("UTF-8");
 	String word = request.getParameter("word");
-	// 1) searchContent == null / 2) searchContent == "" or "단어"
 	
-	// 2. 요청 처리 후 필요하다면 모델데이터 생성
-	final int ROW_PER_PAGE = 10;	// 상수(변수명-대문자)로 선언해 수정 방지
+	//2.
+	final int ROW_PER_PAGE = 10;
 	int beginRow = (currentPage-1)*ROW_PER_PAGE;
 	int cnt = 0;	// 전체 행 개수
 	

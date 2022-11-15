@@ -72,13 +72,8 @@
 		s.emp.firstName = salRs.getString("firstName");
 		s.emp.lastName = salRs.getString("lastName");
 		salList.add(s);
-	}
-	
-	
-	
-	
+	}	
 %>
-    
 <!DOCTYPE html>
 <html>
 <head>
@@ -110,22 +105,22 @@
 		<table class = "table">
 			<tr class = "bg-dark text-center">
 				<th class = "col-2">사원번호</th>
+				<th>이름</th>
+				<th>성</th>
 				<th>연봉($)</th>
 				<th>계약일자</th>
 				<th>만료일자</th>
-				<th>이름</th>
-				<th>성</th>
 			</tr>
 			<%
 				for(Salary s : salList) {
 			%>
 					<tr>
 						<td><%=s.emp.empNo %></td>
+						<td><%=s.emp.firstName %></td>
+						<td><%=s.emp.lastName %></td>
 						<td><%=s.salary %></td>
 						<td><%=s.fromDate %></td>
 						<td><%=s.toDate %></td>
-						<td><%=s.emp.firstName %></td>
-						<td><%=s.emp.lastName %></td>
 					</tr>
 			<%
 				}

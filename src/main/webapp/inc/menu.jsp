@@ -31,6 +31,9 @@
 			<li class="nav-item">
 				<a id="nav5" class="nav-link" href="<%=request.getContextPath()%>/board/boardList.jsp">게시판관리</a>
 			</li>
+			<li class="nav-item">
+				<a id="nav6" class="nav-link" href="<%=request.getContextPath()%>/deptEmp/deptEmpList.jsp">부서&사원 관리</a>
+			</li>
 		</ul>    
   </div>
 </nav>

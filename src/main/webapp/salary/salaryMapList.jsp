@@ -20,7 +20,7 @@
 	stmt.setInt(2, rowPerPage);
 	
 	ResultSet rs = stmt.executeQuery();
-	ArrayList<String, Object> list = new ArrayList<HashMap<String, Object>>();
+	ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 	while(rs.next()) {
 		HashMap<String, Object> m = new HashMap<String, Object>();
 		m.put("enumNo", rs.getInt("empNo"));

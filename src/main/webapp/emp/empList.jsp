@@ -105,7 +105,7 @@
 		<h1 class="text-center">EMPLOYEES LIST</h1>		
 		<table class = "table">
 			<tr class = "bg-dark text-center">
-				<th class = "col-3">사원번호</th>
+				<th class = "col-2">사원번호</th>
 				<th>퍼스트네임</th>
 				<th>라스트네임</th>
 			</tr>
