@@ -68,11 +68,16 @@
 		e.firstName = empRs.getString("firstName");
 		e.lastName = empRs.getString("lastName");
 		empList.add(e);
-	}
-	
-	
-	
-	
+	} 
+	/* 도메인 타입
+	ArrayList<Employee> empList = new ArrayList<Employee>();
+	while(empRs.next()){
+		Employee e = new Employee();
+		e.empNo = empRs.getInt("empNo");
+		e.firstName = empRs.getString("firstName");
+		e.lastName = empRs.getString("lastName");
+		empList.add(e);
+	}  */	
 %>
     
 <!DOCTYPE html>

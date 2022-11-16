@@ -13,15 +13,15 @@
 	// 검색
 	request.setCharacterEncoding("UTF-8");
 	String word = request.getParameter("word");
-	
+
 	//2.
 	final int ROW_PER_PAGE = 10;
 	int beginRow = (currentPage-1)*ROW_PER_PAGE;
 	int cnt = 0;	// 전체 행 개수
-	
+
 	Class.forName("org.mariadb.jdbc.Driver");
 	Connection conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/employees", "root", "java1234");
-	
+
 	// 2-1. 마지막 페이지 구하기 위한 쿼리
 	String cntSql = null;
 	PreparedStatement cntStmt = null;
@@ -33,7 +33,7 @@
 		cntStmt = conn.prepareStatement(cntSql);
 		cntStmt.setString(1, "%"+word+"%");
 	}
-			
+
 	ResultSet cntRs = cntStmt.executeQuery();
 	if(cntRs.next()){
 		cnt = cntRs.getInt("cnt");
@@ -52,7 +52,7 @@
 		listStmt = conn.prepareStatement(listSql);
 		listStmt.setInt(1, beginRow);
 		listStmt.setInt(2, ROW_PER_PAGE);
-		
+	
 	}else {	// 내용에 searchContent를 포함하는 게시글만 출력 
 		listSql = "SELECT board_no boardNo, board_title boardTitle FROM board WHERE board_content LIKE ? ORDER BY board_no ASC LIMIT ?, ?";
 		listStmt = conn.prepareStatement(listSql);
@@ -60,7 +60,18 @@
 		listStmt.setInt(2, beginRow);
 		listStmt.setInt(3, ROW_PER_PAGE);
 	}
+	ResultSet listRs = listStmt.executeQuery();
+
+	//Board.class가 없다면
+	ArrayList<HashMap<String, Object>> boardList = new ArrayList<HashMap<String, Object>>();
+	while(listRs.next()) {
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("boardNo", listRs.getInt("boardNo"));
+		m.put("boardTitle", listRs.getString("boardTitle"));
+		boardList.add(m);
+	}
 	
+	/* 도메인 타입
 	ResultSet listRs = listStmt.executeQuery();	// model source data
 	ArrayList<Board> boardList = new ArrayList<Board>(); // model new data
 	while(listRs.next()){
@@ -68,9 +79,10 @@
 		b.boardNo = listRs.getInt("boardNo");
 		b.boardTitle = listRs.getString("boardTitle");
 		boardList.add(b);
-	}
-	
-	//마지막 페이지
+	}  */
+	listRs.close();
+	listStmt.close();
+	conn.close(); //연결 종료
 %>
 <!DOCTYPE html>
 <html>
@@ -110,14 +122,14 @@
 				<th>제목</th>
 			</tr>
 			<%
-				for(Board board : boardList){
+				for(HashMap<String, Object> m : boardList){
 			%>
 			<tr>
-				<td class="text-center fw-bold"><%=board.boardNo%></td>
+				<td class="text-center fw-bold"><%=m.get("boardNo")%></td>
 				<!-- 제목 클릭시 상세보기 이동 -->
 				<td>
-					<a class="text-decoration-none" id="board1" href="<%=request.getContextPath()%>/board/boardOne.jsp?boardNo=<%=board.boardNo%>">
-						<%=board.boardTitle%>
+					<a class="text-decoration-none" id="board1" href="<%=request.getContextPath()%>/board/boardOne.jsp?boardNo=<%=m.get("boardNo")%>">
+						<%=m.get("boardTitle")%>
 					</a>						
 				</td>
 			</tr>

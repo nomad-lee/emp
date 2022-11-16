@@ -61,6 +61,20 @@
 	}
 	ResultSet salRs = salStmt.executeQuery();
 	
+	//Salary.class가 없다면
+	ArrayList<HashMap<String, Object>> salList = new ArrayList<HashMap<String, Object>>();
+	while(salRs.next()) {
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("empNo", salRs.getInt("empNo"));
+		m.put("firstName", salRs.getString("firstName"));
+		m.put("lastName", salRs.getString("lastName"));
+		m.put("salary", salRs.getString("salary"));
+		m.put("fromDate", salRs.getString("fromDate"));
+		m.put("toDate", salRs.getString("toDate"));
+		salList.add(m);		
+	}
+
+	/* 도메인 타입
 	ArrayList<Salary> salList = new ArrayList<Salary>();
 	while(salRs.next()){
 		Salary s = new Salary();
@@ -72,7 +86,7 @@
 		s.emp.firstName = salRs.getString("firstName");
 		s.emp.lastName = salRs.getString("lastName");
 		salList.add(s);
-	}	
+	}	*/
 %>
 <!DOCTYPE html>
 <html>
@@ -112,15 +126,15 @@
 				<th>만료일자</th>
 			</tr>
 			<%
-				for(Salary s : salList) {
+				for(HashMap<String, Object> m : salList) {
 			%>
 					<tr>
-						<td><%=s.emp.empNo %></td>
-						<td><%=s.emp.firstName %></td>
-						<td><%=s.emp.lastName %></td>
-						<td><%=s.salary %></td>
-						<td><%=s.fromDate %></td>
-						<td><%=s.toDate %></td>
+						<td><%=m.get("empNo")%></td>
+						<td><%=m.get("firstName")%></td>
+						<td><%=m.get("lastName")%></td>
+						<td><%=m.get("salary")%></td>
+						<td><%=m.get("fromDate")%></td>
+						<td><%=m.get("toDate")%></td>
 					</tr>
 			<%
 				}
