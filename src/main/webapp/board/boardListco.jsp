@@ -3,7 +3,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="vo.*" %>
 <%
-	// 1. 요청 분석
+	//1. 요청분석
 	// 페이징
 	int currentPage = 1;
 	if(request.getParameter("currentPage") != null){
@@ -11,18 +11,17 @@
 	}
 	
 	// 검색
-	request.setCharacterEncoding("UTF-8");	//한글
+	request.setCharacterEncoding("UTF-8");
 	String word = request.getParameter("word");
-	// 1) searchContent == null / 2) searchContent == "" or "단어"
-	
-	// 2. 요청 처리 후 필요하다면 모델데이터 생성
-	final int ROW_PER_PAGE = 10;	// 상수(변수명-대문자)로 선언해 수정 방지
+
+	//2.
+	final int ROW_PER_PAGE = 10;
 	int beginRow = (currentPage-1)*ROW_PER_PAGE;
 	int cnt = 0;	// 전체 행 개수
-	
+
 	Class.forName("org.mariadb.jdbc.Driver");
 	Connection conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/employees", "root", "java1234");
-	
+
 	// 2-1. 마지막 페이지 구하기 위한 쿼리
 	String cntSql = null;
 	PreparedStatement cntStmt = null;
@@ -34,17 +33,22 @@
 		cntStmt = conn.prepareStatement(cntSql);
 		cntStmt.setString(1, "%"+word+"%");
 	}
-			
+
 	ResultSet cntRs = cntStmt.executeQuery();
 	if(cntRs.next()){
 		cnt = cntRs.getInt("cnt");
 	}
-
-	int lastPage = (int)Math.ceil((double)cnt / (double)ROW_PER_PAGE);
-	System.out.println("검색 : null 현재 페이지 : " + currentPage);
-	System.out.println("검색 : null board 행의 수 : " + cnt);
-	System.out.println("검색 : null lastPage : " + lastPage);
 	
+	int lastPage = 0;
+	if(cnt == 0){
+		lastPage = 1;
+	} else {
+		lastPage = (int)Math.ceil((double)cnt / (double)ROW_PER_PAGE);
+	}
+	System.out.println("현재 페이지 : " + currentPage);
+	System.out.println("board 행의 수 : " + cnt);
+	System.out.println("lastPage : " + lastPage);
+	//현재 출력 된 내용 증 정렬
 	// 2-2. 불러오기
 	String listSql = null;
 	PreparedStatement listStmt = null;
@@ -53,7 +57,7 @@
 		listStmt = conn.prepareStatement(listSql);
 		listStmt.setInt(1, beginRow);
 		listStmt.setInt(2, ROW_PER_PAGE);
-		
+	
 	}else {	// 내용에 searchContent를 포함하는 게시글만 출력 
 		listSql = "SELECT board_no boardNo, board_title boardTitle FROM board WHERE board_content LIKE ? ORDER BY board_no ASC LIMIT ?, ?";
 		listStmt = conn.prepareStatement(listSql);
@@ -61,7 +65,18 @@
 		listStmt.setInt(2, beginRow);
 		listStmt.setInt(3, ROW_PER_PAGE);
 	}
+	ResultSet listRs = listStmt.executeQuery();
+
+	//Board.class가 없다면
+	ArrayList<HashMap<String, Object>> boardList = new ArrayList<HashMap<String, Object>>();
+	while(listRs.next()) {
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("boardNo", listRs.getInt("boardNo"));
+		m.put("boardTitle", listRs.getString("boardTitle"));
+		boardList.add(m);
+	}
 	
+	/* 도메인 타입
 	ResultSet listRs = listStmt.executeQuery();	// model source data
 	ArrayList<Board> boardList = new ArrayList<Board>(); // model new data
 	while(listRs.next()){
@@ -69,9 +84,10 @@
 		b.boardNo = listRs.getInt("boardNo");
 		b.boardTitle = listRs.getString("boardTitle");
 		boardList.add(b);
-	}
-	
-	//마지막 페이지
+	}  */
+	listRs.close();
+	listStmt.close();
+	conn.close(); //연결 종료
 %>
 <!DOCTYPE html>
 <html>
@@ -89,9 +105,9 @@
 	h1 { font-family: 'Nanum Gothic Coding', monospace; color:white; padding-top:50px; font-size: 40px;}
 	th { font-family: 'Nanum Gothic Coding', monospace; color:white;}
 	body { background-color:#196F3D;}
-	td, div#currentPageNum { color:white;}
+	td, div#currentPageNum, div#cntSearchRow { color:white;}
 	a#board1:link, a#board1:visited { color:white;} /* id선택자 #으로 사용 */
-
+	input#word { width:250px;}
 </style>
 </head>
 <body>
@@ -101,32 +117,6 @@
 	</div>
 	<div class = "container">		
 		<h1 class="text-center">GENERAL FORUM</h1>
-		<!-- 부서명 검색창 -->
-		<form action="<%=request.getContextPath()%>/board/boardList.jsp" method="post">
-			<table>
-			<tr>
-			<td>
-			<label for="word">부서이름 검색 : </label>
-			<%
-				if (word == null) {
-			%>
-				<input type="text" name="word" id="word">
-			<%
-				} else {
-			%>
-				<input type="text" name="word" id="word" value="<%=word%>">
-			<%
-				}
-			%>
-        	<button type="submit">검색</button>
-			</td>
-			</tr>
-			<tr>
-			<td>검색한 내용을 포함한 행의 수 : <%=cnt%></td>
-			</tr>
-			</table>
-		</form>
-		
 		<div align="right">
 			<a class="btn btn-secondary" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 추가</a>
 		</div>	
@@ -137,14 +127,14 @@
 				<th>제목</th>
 			</tr>
 			<%
-				for(Board board : boardList){
+				for(HashMap<String, Object> m : boardList){
 			%>
 			<tr>
-				<td class="text-center fw-bold"><%=board.boardNo%></td>
+				<td class="text-center fw-bold"><%=m.get("boardNo")%></td>
 				<!-- 제목 클릭시 상세보기 이동 -->
 				<td>
-					<a class="text-decoration-none" id="board1" href="<%=request.getContextPath()%>/board/boardOne.jsp?boardNo=<%=board.boardNo%>">
-						<%=board.boardTitle%>
+					<a class="text-decoration-none" id="board1" href="<%=request.getContextPath()%>/board/boardOne.jsp?boardNo=<%=m.get("boardNo")%>">
+						<%=m.get("boardTitle")%>
 					</a>						
 				</td>
 			</tr>
@@ -155,10 +145,13 @@
 		</table>
 	</div>
 	<div class = "container">
-		<div id="currentPageNum">현재 페이지 : <%=currentPage%>	</div>
+		<div class="row">
+			<div class="col text-start" id="currentPageNum">현재 페이지 : <%=currentPage%></div>
+			<div class="col-7 text-end" id="cntSearchRow">검색결과를 포함한 행의 수 : <%=cnt%></div>
+		</div>
 		<!--3.2 페이징코드 -->
 		<nav aria-label="pagiantion">
-	  		<ul class="pagination justify-content-center">
+	  		<ul class="pagination justify-content-center mt-3">
 	  		<%
 	  			if(word == null){
 	  		%>	  			
@@ -213,7 +206,32 @@
 	  			}
 			%>
 			</ul>
-		</nav>		
+		</nav>
+		<!-- 부서명 검색창 -->
+		<div class="d-flex justify-content-center mt-4">
+			<form action="<%=request.getContextPath()%>/board/boardList.jsp" method="post">
+				<div class="row">
+					<div class="form-floating col-auto d-grid mx-auto">
+					<%
+						if (word == null) {
+					%>
+								<input type="text" class="form-control-sm" name="word" id="word" placeholder="찾을 내용을 입력">
+			
+					<%
+						} else {
+					%>
+								<input type="text" class="form-control-sm" name="word" id="word" placeholder="찾을 내용을 입력" value="<%=word%>">
+			
+					<%
+						}
+					%>
+					</div>
+					<div class="col-auto">
+			        	<button type="submit" class="btn btn-primary">검색</button>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 </body>
 </html>
