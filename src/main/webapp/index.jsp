@@ -20,7 +20,6 @@
 	a:link { color:black; text-decoration: none; font-family: 'Gowun Dodum', sans-serif;}
 </style>
 </head>
-
 <body>
 	<div class="container">
 	 	<img class="pt-3" src="<%=request.getContextPath()%>/img/starbucks.png"/>

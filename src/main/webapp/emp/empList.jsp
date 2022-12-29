@@ -24,7 +24,7 @@
 	if(word == null){
 		cntSql = "SELECT COUNT(*) cnt FROM employees";
 		cntStmt = conn.prepareStatement(cntSql);
-	} else {		
+	} else {
 		cntSql = "SELECT COUNT(*) cnt from employees WHERE first_name LIKE ? OR last_name LIKE ?";
 		cntStmt = conn.prepareStatement(cntSql);
 		cntStmt.setString(1, "%"+word+"%");

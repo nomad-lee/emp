@@ -143,11 +143,11 @@
 	<div>
 		<jsp:include page="/inc/menu.jsp"></jsp:include>
 	</div>
-	<div class = "container">		
+	<div class = "container">
 		<h1 class="text-center">GENERAL FORUM</h1>
 		<div align="right">
 			<a class="btn btn-secondary" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 추가</a>
-		</div>	
+		</div>
 		<!-- 3. 모델데이터(ArrayList<Board>) 출력 -->
 		<table class="table">
 			<tr class = "bg-dark text-center">

@@ -66,33 +66,31 @@
 	%>
 	
 	<div class="container">
-		<form action="<%=request.getContextPath()%>/board/updateBoardAction.jsp" method="post">
-			<table class = "table">				
-				<div class="row g-2">
-					<div class="form-floating col-md-2">
-					  <input type="text" class="form-control" id="floatingInput" placeholder="Num"  name="boardNo" value="<%=boardNo%>" readonly>
-					  <label for="floatingInput">번호</label>
-					</div>
-					<div class="form-floating col-md">
-					  <input type="text" class="form-control" id="floatingInput" placeholder="제목을 입력하시오" name="boardTitle" value="<%=board.boardTitle%>">
-					  <label for="floatingInput">제목</label>
-					</div>
+		<form action="<%=request.getContextPath()%>/board/updateBoardAction.jsp" method="post">			
+			<div class="row g-2">
+				<div class="form-floating col-md-2">
+				  <input type="text" class="form-control" id="floatingInput" placeholder="Num"  name="boardNo" value="<%=boardNo%>" readonly>
+				  <label for="floatingInput">번호</label>
 				</div>
-				<div class="form-floating my-3">
-				  <textarea class="form-control" id="floatingTextarea" style="height: 300px" placeholder="내용을 입력하시오" name="boardContent"><%=board.boardContent%></textarea>
-				  <label for="floatingTextarea">내용</label>
+				<div class="form-floating col-md">
+				  <input type="text" class="form-control" id="floatingInput" placeholder="제목을 입력하시오" name="boardTitle" value="<%=board.boardTitle%>">
+				  <label for="floatingInput">제목</label>
 				</div>
-				<div class="row g-2">
-					<div class="form-floating col-md-8">
-					  <input type="text" class="form-control" id="floatingInput" placeholder="Writer"  name="boardWriter" value="<%=board.boardWriter%>">
-					  <label for="floatingInput">작성자</label>
-					</div>
-					<div class="form-floating col-md">
-					  <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="boardPw">
-					  <label for="floatingInput">비밀번호</label>
-					</div>
+			</div>
+			<div class="form-floating my-3">
+			  <textarea class="form-control" id="floatingTextarea" style="height: 300px" placeholder="내용을 입력하시오" name="boardContent"><%=board.boardContent%></textarea>
+			  <label for="floatingTextarea">내용</label>
+			</div>
+			<div class="row g-2">
+				<div class="form-floating col-md-8">
+				  <input type="text" class="form-control" id="floatingInput" placeholder="Writer"  name="boardWriter" value="<%=board.boardWriter%>">
+				  <label for="floatingInput">작성자</label>
 				</div>
-			</table>
+				<div class="form-floating col-md">
+				  <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="boardPw">
+				  <label for="floatingInput">비밀번호</label>
+				</div>
+			</div>
 			<div class="text-center">
 				<button type="submit" class="btn btn-light btn-lg center">수정완료</button>
 			</div>			
